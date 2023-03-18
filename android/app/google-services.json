@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "283942785831",
+    "project_id": "delvoo-87f61",
+    "storage_bucket": "delvoo-87f61.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:283942785831:android:dfabdf40cc69f0037ccf02",
+        "android_client_info": {
+          "package_name": "com.example.delvoodelivery"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "283942785831-ekbg0t5unge1bvemkjic712i45l1lv3t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDU4bwDnyM-4MZCyKECmYe95UXQElBgsG8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "283942785831-ekbg0t5unge1bvemkjic712i45l1lv3t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
