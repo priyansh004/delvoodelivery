@@ -1,6 +1,9 @@
 import 'package:delvoodelivery/src/login/loginPage.dart';
+import 'package:delvoodelivery/src/signup/temp.dart';
 import 'package:flutter/material.dart';
 import 'package:delvoodelivery/src/login/AlreadyHaveAnAccountCheck.dart';
+import 'package:delvoodelivery/src/signup/temp.dart';
+
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
 
@@ -53,8 +56,15 @@ class _SignUpPageState extends State<SignUpPage> {
               ),
               SizedBox(height: 32.0),
               ElevatedButton(
-                onPressed: () {
-                  // Sign up button pressed action
+                onPressed: () => {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return temp();
+                      },
+                    ),
+                  ),
                 },
                 child: Text('Sign Up'),
               ),

@@ -1,7 +1,13 @@
+import 'package:delvoodelivery/firebase_options.dart';
 import 'package:delvoodelivery/src/login/loginPage.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-
+import 'package:delvoodelivery/src/signup/temp.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const MyApp());
 }
 
@@ -17,7 +23,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
 
         primarySwatch: Colors.blue,
-        primaryColor: Colors.indigo,
+        //primaryColor: Colors.green,
 
       ),
       // darkTheme: ThemeData(
@@ -26,7 +32,16 @@ class MyApp extends StatelessWidget {
       //
       // ),
       themeMode: ThemeMode.system,
-      home: const loginPage(),
+        home: StreamBuilder(
+          stream: FirebaseAuth.instance.authStateChanges(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return temp();
+            } else {
+              return loginPage();
+            }
+          },
+        ),
     );
   }
 }
