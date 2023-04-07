@@ -1,144 +1,151 @@
+import 'package:delvoodelivery/src/Home/Home.dart';
+import 'package:delvoodelivery/src/utils/loading.dart';
 import 'package:flutter/material.dart';
-import 'package:delvoodelivery/src/signup/SignUpPage.dart';
 import 'AlreadyHaveAnAccountCheck.dart';
 import 'package:delvoodelivery/src/img.dart';
 import 'package:delvoodelivery/src/utils/helper.dart';
 import 'package:delvoodelivery/src/auth/Firebasefunction.dart';
-
+import 'package:flutter/src/widgets/form.dart';
 import 'package:delvoodelivery/src/auth/authFunctions.dart';
-class loginPage extends StatefulWidget {
-  const loginPage({Key? key}) : super(key: key);
 
+import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+class FancyLoginPage extends StatefulWidget {
   @override
-  State<loginPage> createState() => _loginPageState();
+  _FancyLoginPageState createState() => _FancyLoginPageState();
 }
 
-class _loginPageState extends State<loginPage> {
+class _FancyLoginPageState extends State<FancyLoginPage> {
   final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
 
-  String email = '';
-  String password = '';
-  String fullname = '';
-  bool login = false;
+  String _errorMessage = '';
+  bool _isLoading = false;
+
+  Future<void> _login() async {
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isLoading = true;
+      });
+      try {
+        final userCredential =
+            await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: _emailController.text,
+          password: _passwordController.text,
+        );
+        // Login successful, navigate to next screen
+        //Navigator.pushReplacementNamed(context, LoadingScreen());
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => LoadingScreen()),
+        );
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'user-not-found' || e.code == 'wrong-password') {
+          setState(() {
+            _errorMessage = 'Invalid email or password';
+          });
+        } else {
+          setState(() {
+            _errorMessage = 'An error occurred, please try again later';
+          });
+        }
+      } finally {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
-      appBar: AppBar(
-        title: Text('Login'),
-      ),
-      body: Container(
-        height: Helper.getScreenHeight(context),
-        width: Helper.getScreenWidth(context),
-    child: SafeArea(
-      child: Container(
-    padding: const EdgeInsets.symmetric(
-    horizontal: 40,
-    vertical: 30,
-    ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-
-            logo(),
-              login
-                  ? Container()
-                  : TextFormField(
-                key: ValueKey('fullname'),
-                decoration: InputDecoration(
-                  hintText: 'Enter Full Name',
+    return Scaffold(
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.all(16),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [Colors.blue, Colors.blueAccent],
+                    ),
+                  ),
                 ),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Please Enter Full Name';
-                  } else {
-                    return null;
-                  }
-                },
-                onSaved: (value) {
-                  setState(() {
-                    fullname = value!;
-                  });
-                },
-              ),
-
-              // ======== Email ========
-              SizedBox(height: 16.0),
-              TextFormField(
-                key: ValueKey('email'),
-                decoration: InputDecoration(
-                  hintText: 'Enter Email',
+                SizedBox(height: 100),
+                logo(),
+                SizedBox(height: 16),
+                Text(
+                  'Welcome back',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                validator: (value) {
-                  if (value!.isEmpty || !value.contains('@')) {
-                    return 'Please Enter valid Email';
-                  } else {
+                SizedBox(height: 16),
+                TextFormField(
+                  controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: InputDecoration(
+                    hintText: 'Email',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Email is required';
+                    } else if (!value.contains('@')) {
+                      return 'Invalid email';
+                    }
                     return null;
-                  }
-                },
-                onSaved: (value) {
-                  setState(() {
-                    email = value!;
-                  });
-                },
-              ),
-              SizedBox(height: 16.0),
-              ElevatedButton(
-                onPressed: () {
-                  // Login button pressed action
-                },
-                child: Text('Login'),
-              ),
-              SizedBox(height: 16.0),
-              TextFormField(
-                key: ValueKey('password'),
-                obscureText: true,
-                decoration: InputDecoration(
-                  hintText: 'Enter Password',
-                ),
-                validator: (value) {
-                  if (value!.length < 6) {
-                    return 'Please Enter Password of min length 6';
-                  } else {
-                    return null;
-                  }
-                },
-                onSaved: (value) {
-                  setState(() {
-                    password = value!;
-                  });
-                },
-              ),
-              SizedBox(height: 16.0),
-              Container(
-                height: 55,
-                width: double.infinity,
-                child: ElevatedButton(
-                    onPressed: () async {
-                      if (_formKey.currentState!.validate()) {
-                        _formKey.currentState!.save();
-                        login
-                            ? AuthServices.signinUser(email, password, context)
-                            : AuthServices.signupUser(
-                            email, password, fullname, context);
-                      }
-                    },
-                    child: Text(login ? 'Login' : 'Signup')),
-              ),
-              SizedBox(height: 16.0),
-              TextButton(
-                  onPressed: () {
-                    setState(() {
-                      login = !login;
-                    });
                   },
-                  child: Text(login
-                      ? "Don't have an account? Signup"
-                      : "Already have an account? Login"))
-
-            ],
+                ),
+                SizedBox(height: 16),
+                TextFormField(
+                  controller: _passwordController,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    hintText: 'Password',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Password is required';
+                    } else if (value.length < 6) {
+                      return 'Password must be at least 6 characters';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 16),
+                if (_errorMessage.isNotEmpty)
+                  Text(
+                    _errorMessage,
+                    style: TextStyle(
+                      color: Colors.red,
+                    ),
+                  ),
+                SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: _isLoading ? null : _login,
+                  child:
+                      _isLoading ? CircularProgressIndicator() : Text('LOGIN'),
+                ),
+              ],
+            ),
           ),
         ),
-    ),),
+      ),
     );
   }
 }
+
+//
